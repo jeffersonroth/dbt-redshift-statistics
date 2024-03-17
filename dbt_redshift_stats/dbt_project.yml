@@ -1,0 +1,68 @@
+name: "dbt_redshift_stats"
+version: "1.0.0"
+config-version: 2
+
+profile: "dbt_redshift_stats"
+
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+
+clean-targets: # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+models:
+  redshift_stats:
+    +schema: redshift_stats
+    svv_table_info_tmp:
+    svv_table_info_current:
+    svv_table_info_history:
+      post-hook: >
+        UPDATE {{ this }} AS hist
+        SET valid_to = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+        FROM {{ ref('svv_table_info_tmp') }} AS tmp
+        WHERE hist.database_name = tmp.database_name
+          AND hist.schema_name = tmp.schema_name
+          AND hist.table_name = tmp.table_name
+          AND hist.valid_to IS NULL;
+
+# Vars
+vars:
+  monitored_schemas:
+    schemas:
+      - ext_logistics
+      - ext_marketing
+      - ext_notifications
+      - ext_orders
+      - ext_products
+      - ext_stores
+      - ext_users
+      - logistics
+      - marketing
+      - notifications
+      - orders
+      - products
+      - src_logistics
+      - src_marketing
+      - src_notifications
+      - src_orders
+      - src_products
+      - src_stores
+      - src_users
+      - stg_logistics
+      - stg_marketing
+      - stg_notifications
+      - stg_orders
+      - stg_products
+      - stg_stores
+      - stg_users
+      - stores
+      - users
+  mock_id: ""

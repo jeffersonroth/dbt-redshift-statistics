@@ -1,0 +1,12 @@
+dbt_redshift_stats:
+  target: test
+  outputs:
+    test:
+      type: postgres
+      host: "{{ env_var('DBT_HOST') }}"
+      port: "{{ env_var('DBT_PORT') | as_number }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_NAME') }}"
+      schema: "{{ env_var('DBT_SCHEMA') }}"
+      threads: "{{ env_var('DBT_THREADS') | as_number }}"

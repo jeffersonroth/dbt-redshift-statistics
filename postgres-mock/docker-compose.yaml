@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  postgres-mock:
+    build:
+      context: ../
+      dockerfile: ./postgres-mock/Dockerfile
+    container_name: postgres-mock
+    env_file:
+      - ../.env
+    volumes:
+      - ../dbt_redshift_stats:/app/dbt_redshift_stats

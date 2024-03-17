@@ -1,0 +1,14 @@
+-- Create schema.
+CREATE schema IF NOT EXISTS "{{ schema_name }}";
+-- Drop table if `recreate`.
+{% if recreate %}
+    DROP TABLE IF EXISTS "{{ schema_name }}"."{{ table_name }}";
+{% endif %}
+
+-- Create table if not exists.
+CREATE TABLE IF NOT EXISTS "{{ schema_name }}"."{{ table_name }}" ({% for column_name, column_type in columns.items() %}
+    "{{ column_name }}" {{ column_type }}
+
+    {% if not loop.last %},
+    {% endif %}
+{% endfor %});
