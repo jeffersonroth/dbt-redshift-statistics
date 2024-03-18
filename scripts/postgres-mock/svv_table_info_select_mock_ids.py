@@ -3,8 +3,8 @@ import psycopg2
 import click
 import tempfile
 
-SOURCE_SCHEMA = "redshift_stats"
-SOURCE_TABLE = "svv_table_info_current"
+SOURCE_SCHEMA = "monitoring"
+SOURCE_TABLE = "table_info"
 TARGET_SCHEMA = "mock_redshift"
 TARGET_TABLE = "mock_svv_table_info"
 

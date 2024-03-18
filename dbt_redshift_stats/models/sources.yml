@@ -3,10 +3,11 @@
 version: 2
 
 sources:
-  - name: redshift_system
-    tables:
-      - name: svv_table_info
   - name: mock_system
     schema: mock_redshift
     tables:
       - name: mock_svv_table_info
+  - name: monitoring
+    tables:
+      - name: table_info
+      - name: table_info_scd

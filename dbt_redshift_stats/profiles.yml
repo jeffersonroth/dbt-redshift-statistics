@@ -8,5 +8,5 @@ dbt_redshift_stats:
       user: "{{ env_var('DBT_USER') }}"
       password: "{{ env_var('DBT_PASSWORD') }}"
       dbname: "{{ env_var('DBT_NAME') }}"
-      schema: "{{ env_var('DBT_SCHEMA') }}"
-      threads: "{{ env_var('DBT_THREADS') | as_number }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'public') }}"
+      threads: "{{ env_var('DBT_THREADS', '1') | as_number }}"
