@@ -14,29 +14,22 @@ test-paths: ["tests"]
 clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
+  - "dbt_modules"
+  - "logs"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
 models:
   redshift_stats:
-    +schema: redshift_stats
-    svv_table_info_tmp:
-    svv_table_info_current:
-    svv_table_info_history:
-      post-hook: >
-        UPDATE {{ this }} AS hist
-        SET valid_to = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
-        FROM {{ ref('svv_table_info_tmp') }} AS tmp
-        WHERE hist.database_name = tmp.database_name
-          AND hist.schema_name = tmp.schema_name
-          AND hist.table_name = tmp.table_name
-          AND hist.valid_to IS NULL;
+    monitoring:
+      materialized: table
+      schema: monitoring
 
 # Vars
 vars:
   monitored_schemas:
-    schemas:
+    external:
       - ext_logistics
       - ext_marketing
       - ext_notifications
@@ -44,11 +37,15 @@ vars:
       - ext_products
       - ext_stores
       - ext_users
+    production:
       - logistics
       - marketing
       - notifications
       - orders
       - products
+      - stores
+      - users
+    sources:
       - src_logistics
       - src_marketing
       - src_notifications
@@ -56,6 +53,7 @@ vars:
       - src_products
       - src_stores
       - src_users
+    staging:
       - stg_logistics
       - stg_marketing
       - stg_notifications
@@ -63,6 +61,4 @@ vars:
       - stg_products
       - stg_stores
       - stg_users
-      - stores
-      - users
   mock_id: ""

@@ -1,18 +1,19 @@
--- models/svv_table_info_tmp.sql
+-- models/monitoring/table_info_tmp.sql
 {{ config(
-    materialized = 'ephemeral'
+    materialized = 'table',
+    schema = 'monitoring',
+    tags = ['redshift', 'monitoring', 'table_info', 'tmp'],
 ) }}
 
 {% set current_env = target.env if target.env else env_var(
-    'DBT_ENV',
-    'prod'
+    'DBT_ENVIRONMENT',
+    'dev'
 ) %}
-{% set schema_list = var('monitored_schemas') ['schemas'] %}
+{% set schema_list = var('monitored_schemas') ['external'] + var('monitored_schemas') ['production'] + var('monitored_schemas') ['sources'] + var('monitored_schemas') ['staging'] %}
 {% set mock_id = var(
     'mock_id',
     ''
 ) %}
--- Retrieve the variable value with a default
 
 SELECT
     "database" :: VARCHAR(255) AS database_name,
@@ -61,21 +62,16 @@ FROM
         {{ source(
             'mock_system',
             'mock_svv_table_info'
-        ) }}
-        -- Reference to a mock table or a different source in dev environment
+        ) }} -- Mock table in dev environment (Postgres)
     {% else %}
-        {{ source(
-            'redshift_system',
-            'svv_table_info'
-        ) }}
-        -- Actual Redshift system table in prod environment
+        svv_table_info -- Actual Redshift system table in prod environment
     {% endif %}
 WHERE
     "schema" IN ({% for schema in schema_list %}
         '{{ schema }}' {% if not loop.last %},
         {% endif %}
     {% endfor %}) {% if current_env == 'dev' %}
-        AND "mock_id" = '{{ mock_id }}'::BIGINT -- Additional filter for dev environment
+        AND "mock_id" = '{{ mock_id }}'::BIGINT
     {% endif %}
 ORDER BY
     database_name,
